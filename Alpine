@@ -1,0 +1,87 @@
+Alpine
+localhost:~# cat /etc/apk/repositories
+https://mirrors.aliyun.com/alpine/v3.9/main/
+https://mirrors.aliyun.com/alpine/v3.9/community/
+
+https://www.hi-linux.com/
+https://hub.docker.com/_/alpine?tab=tags
+镜像比较：
+Alpine 3.9
+[root@BurlyLuo ~]# docker pull alpine:3.9
+Trying to pull repository docker.io/library/alpine ...
+3.9: Pulling from docker.io/library/alpine
+6c40cc604d8e: Pull complete
+Digest: sha256:b3dbf31b77fd99d9c08f780ce6f5282aba076d70a513a8be859d8d3a4d0c92b8
+Status: Downloaded newer image for docker.io/alpine:3.9
+[root@BurlyLuo ~]# docker image ls
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+docker.io/alpine    3.9                 caf27325b298        2 weeks ago         5.53 MB
+[root@BurlyLuo ~]#
+
+ubantu 18.04
+[root@BurlyLuo ~]# docker pull ubuntu:18.04
+Trying to pull repository docker.io/library/ubuntu ...
+18.04: Pulling from docker.io/library/ubuntu
+6cf436f81810: Pull complete
+987088a85b96: Pull complete
+b4624b3efe06: Pull complete
+d42beb8ded59: Pull complete
+Digest: sha256:7a47ccc3bbe8a451b500d2b53104868b46d60ee8f5b35a24b41a86077c650210
+Status: Downloaded newer image for docker.io/ubuntu:18.04
+[root@BurlyLuo ~]#
+
+CentOS
+root@BurlyLuo ~]# docker pull centos:7
+Trying to pull repository docker.io/library/centos ...
+7: Pulling from docker.io/library/centos
+a02a4930cb5d: Pull complete
+Digest: sha256:184e5f35598e333bfa7de10d8fb1cebb5ee4df5bc0f970bf2b1e7c7345136426
+Status: Downloaded newer image for docker.io/centos:7
+[root@BurlyLuo ~]# 
+
+[root@BurlyLuo ~]# docker image ls
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+docker.io/ubuntu    18.04               47b19964fb50        10 days ago         88.1 MB
+docker.io/alpine    3.9                 caf27325b298        2 weeks ago         5.53 MB
+docker.io/centos    7                   1e1148e4cc2c        2 months ago        202 MB
+[root@BurlyLuo ~]# df -h
+overlay               50G  2.0G   49G   4% /var/lib/docker/overlay2/47994a24de1c5cb59cbf3f2bbe06d21f7f8cb23b93e1e8ed438cf593e7ec4e25/merged
+shm                   64M     0   64M   0% /var/lib/docker/containers/748c6493ed60a338680b7b0221ad271bdb2091861c9b5353cd25f7edb67bff1b/shm
+overlay               50G  2.0G   49G   4% /var/lib/docker/overlay2/8d479ca886170035fa59f7c82b516e3895f29b6a525032d4c63e1ef4832250c2/merged
+shm                   64M     0   64M   0% /var/lib/docker/containers/72eb050bfa7a656d4056c0292d104b2c200f0c849e27cc7eed2d10420f1e6118/shm
+overlay               50G  2.0G   49G   4% /var/lib/docker/overlay2/4bdebbbf1cdcbccff48cd3f350b6eb58f47c7f97911f76dc6cd03c4c989545ca/merged
+shm                   64M     0   64M   0% /var/lib/docker/containers/a4eb261be5937922b3626db3a2d85a01c7e790df39c21361d9037bcca09a2930/shm
+
+Alpine常用操作
+rc-service networking status   ##查看服务的状态
+rc-service -l                  # list all available services
+2.apk update
+$ apk update #更新最新镜像源列表
+
+3.apk search
+$ apk search #查找所以可用软件包
+$ apk search -v #查找所以可用软件包及其描述内容
+$ apk search -v 'acf*' #通过软件包名称查找软件包
+$ apk search -v -d 'docker' #通过描述文件查找特定的软件包
+
+4.apk add
+$ apk add openssh #安装一个软件
+$ apk add openssh openntp vim   #安装多个软件
+$ apk add --no-cache mysql-client  #不使用本地镜像源缓存，相当于先执行update，再执行add
+
+1.增加服务到系统启动时运行，下例为docker
+
+rc-update add docker boot
+
+2.重启网络服务
+
+rc-service networking restart
+
+3.列出所有服务
+
+rc-status -a
+
+
+
+
+

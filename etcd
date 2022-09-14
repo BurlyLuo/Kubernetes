@@ -1,0 +1,24 @@
+kubernetes 之 etcd[使用kubeadm自动部署的etcd]
+CLI 提示：[https://segmentfault.com/a/1190000016010980]
+/ # 1.1
+ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt --key=/etc/kubernetes/pki/etcd/healthcheck-client.key get /registry/services/endpoints/kube-system/kube-controller-manager -w json
+{"header":{"cluster_id":1475871750119606395,"member_id":6924094614307484049,"revision":2576204,"raft_term":5},"kvs":[{"key":"L3JlZ2lzdHJ5L3NlcnZpY2VzL2VuZHBvaW50cy9rdWJlLXN5c3RlbS9rdWJlLWNvbnRyb2xsZXItbWFuYWdlcg==","create_revision":132,"mod_revision":2576204,"version":976921,"value":"azhzAAoPCgJ2MRIJRW5kcG9pbnRzEssCCsgCChdrdWJlLWNvbnRyb2xsZXItbWFuYWdlchIAGgtrdWJlLXN5c3RlbSIAKiRkMGNiOTRmMC0zMzgwLTExZTktYTA5Ni0wMDBjMjk1YWI0NWIyADgAQggIjOWq4wUQAGLlAQooY29udHJvbC1wbGFuZS5hbHBoYS5rdWJlcm5ldGVzLmlvL2xlYWRlchK4AXsiaG9sZGVySWRlbnRpdHkiOiJrOHMtMV9iMDM0ODFhMS00NTNjLTExZTktOWE2YS0wMDBjMjk1YWI0NWIiLCJsZWFzZUR1cmF0aW9uU2Vjb25kcyI6MTUsImFjcXVpcmVUaW1lIjoiMjAxOS0wMy0xM1QwMzowNDozM1oiLCJyZW5ld1RpbWUiOiIyMDE5LTAzLTEzVDExOjA0OjA1WiIsImxlYWRlclRyYW5zaXRpb25zIjoxM316ABoAIgA="}],"count":1}
+/ #1.2:
+/ # ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt --key=/etc/kubernetes/pki/etcd/healthcheck-client.key member list -w json
+{"header":{"cluster_id":1475871750119606395,"member_id":6924094614307484049,"raft_term":5},"members":[{"ID":6924094614307484049,"name":"k8s-1","peerURLs":["https://172.12.1.10:2380"],"clientURLs":["https://172.12.1.10:2379"]}]}
+/ # 
+
+2.实际上这是从log中发现的：
+[root@k8s-1 ~]# kubectl logs -f etcd-k8s-1  -n=kube-system
+2019-03-13 10:39:43.334122 I | mvcc: finished scheduled compaction at 2573918 (took 1.353219ms)
+2019-03-13 10:44:08.369573 W | etcdserver: read-only range request "key:\"/registry/pods/kube-system/\" range_end:\"/registry/pods/kube-system0\" limit:500 " with result "range_response_count:11 size:24228" took too long (212.320102ms) to execute
+2019-03-13 10:44:43.337644 I | mvcc: store.index: compact 2574307
+2019-03-13 10:44:43.339269 I | mvcc: finished scheduled compaction at 2574307 (took 1.248005ms)
+2019-03-13 10:49:43.345576 I | mvcc: store.index: compact 2574697
+2019-03-13 10:49:43.347739 I | mvcc: finished scheduled compaction at 2574697 (took 1.493414ms)
+2019-03-13 10:54:43.352799 I | mvcc: store.index: compact 2575086
+2019-03-13 10:54:43.354743 I | mvcc: finished scheduled compaction at 2575086 (took 1.144337ms)
+2019-03-13 10:59:43.361222 I | mvcc: store.index: compact 2575475
+2019-03-13 10:59:43.363536 I | mvcc: finished scheduled compaction at 2575475 (took 1.617139ms)
+2019-03-13 11:04:43.367545 I | mvcc: store.index: compact 2575864
+2019-03-13 11:04:43.368769 I | mvcc: finished scheduled compaction at 2575864 (took 901.061µs) 
